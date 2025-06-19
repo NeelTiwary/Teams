@@ -244,7 +244,7 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                               fontSize: 22,
                             }}
                           >
-                            → // TODO : Better Arrow key to be finded with label
+                             → {/*// TODO : Better Arrow key to be finded with label */}
                           </Typography>
                         )}
                       </Box>
