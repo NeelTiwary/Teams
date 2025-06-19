@@ -14,9 +14,9 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 // props type
 interface FileHandlerProps {
   selections: {
-    [key: string]: {
+    [developerId: string]: {
       checked: boolean;
-      [key: string]: any;
+      [skillId: string]: any;
     };
   };
 }

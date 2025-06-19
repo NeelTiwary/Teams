@@ -26,7 +26,7 @@ interface Team {
 }
 
 interface Skill {
-  id?: number;
+  id?: string;
   expertise: string;
   experience?: string;
   inputValue?: string;
@@ -100,7 +100,7 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
 
   const addSkill = (memberId: string, expertise: string): Skill => {
     const newSkill: Skill = {
-      id: Date.now(), // unique ID
+      id: memberId, // unique ID
       expertise,
       experience: "Beginner", // default value
     };
@@ -147,7 +147,6 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                     onChange={() => toggleCheckbox(team.teamId)}
                   />
 
-                  {/* TODO : give space between first dropdown and second label and arrow from src to target */}
                   {members.map((member, index) => (
                     <Grid key={member.id}>
                       <Box
@@ -196,7 +195,7 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                               ? option
                               : option.inputValue
                               ? option.expertise
-                              : option.expertise
+                              : option.expertise // TODO : fix this
                           }
                           onChange={(_ ,val) => {
                             if (!val || val.disabled) return;
@@ -208,7 +207,6 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                                 : val;
                             updateSkill(team.teamId, member.id, skill);
                           }}
-                          // TODO: higlight the headers of option dropdown
                           renderOption={(props, option) => (
                             <li {...props} key={option.id || option.expertise}>
                               <Box
@@ -246,7 +244,7 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                               fontSize: 22,
                             }}
                           >
-                            →
+                            → // TODO : Better Arrow key to be finded with label
                           </Typography>
                         )}
                       </Box>
