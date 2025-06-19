@@ -5,7 +5,6 @@ import {
   Typography,
   FormGroup,
   Box,
-  Grid,
   Checkbox,
   TextField,
   Divider,
@@ -14,6 +13,8 @@ import Autocomplete, {
   createFilterOptions,
 } from "@mui/material/Autocomplete";
 import { grey } from "@mui/material/colors";
+import Grid from "@mui/material/Grid"; // 
+
 
 // types
 interface Team {
@@ -148,7 +149,7 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
 
                   {/* TODO : give space between first dropdown and second label and arrow from src to target */}
                   {members.map((member, index) => (
-                    <Grid item key={member.id}>
+                    <Grid key={member.id}>
                       <Box
                         sx={{ display: "flex", alignItems: "center", gap: 1 }}
                       >
@@ -197,7 +198,7 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                               ? option.expertise
                               : option.expertise
                           }
-                          onChange={(e, val) => {
+                          onChange={(_ ,val) => {
                             if (!val || val.disabled) return;
                             const skill =
                               typeof val === "string"

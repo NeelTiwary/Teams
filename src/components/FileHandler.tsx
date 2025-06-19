@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import * as yaml from "js-yaml";
+//npm install --save-dev @types/js-yaml - type this in your terminal
 import {
   Box,
   Button,
@@ -63,7 +64,7 @@ const FileHandler: React.FC<FileHandlerProps> = ({ selections }) => {
     }
 
     // Object.entries(selections || {}).filter(teamData.checked).forEach(([teamId, teamData]) => {
-    Object.entries(selections || {}).forEach(([teamId, teamData]) => {
+    Object.entries(selections || {}).forEach(([_, teamData]) => {
       if (!teamData.checked) return;
 
       const memberIds = Object.keys(teamData).filter((k) => k !== "checked");
@@ -178,7 +179,7 @@ const FileHandler: React.FC<FileHandlerProps> = ({ selections }) => {
         alignItems="center"
         spacing={2}
       >
-        <Grid item>
+        <Grid>
           <Button
             component="label"
             variant="outlined"
@@ -196,7 +197,7 @@ const FileHandler: React.FC<FileHandlerProps> = ({ selections }) => {
           </Button>
         </Grid>
 
-        <Grid item>
+        <Grid>
           <Button
             variant="contained"
             color={showContent ? "warning" : "success"}
@@ -206,7 +207,7 @@ const FileHandler: React.FC<FileHandlerProps> = ({ selections }) => {
           </Button>
         </Grid>
 
-        <Grid item>
+        <Grid>
           <ButtonGroup variant="outlined">
             <Button onClick={() => handleDownload("json")}>Download JSON</Button>
             <Button onClick={() => handleDownload("yml")}>Download YAML</Button>
