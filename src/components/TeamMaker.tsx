@@ -23,7 +23,10 @@ import type {
 const filter = createFilterOptions<Skill>();
 
 const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
+  // memberSkills will hold the selected skills for each team order 
+  // (checkbox : true / false , 101 :<selected skill 1> ,102:<selected skill2>)
   const [memberSkills, setMemberSkills] = useState<MemberSkills>({});
+   // allSkills will hold all the skills for each team member with key as memberId
   const [allSkills, setAllSkills] = useState<AllSkills>({});
 
   useEffect(() => {
