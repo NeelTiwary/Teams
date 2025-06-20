@@ -14,48 +14,21 @@ import Autocomplete, {
 } from "@mui/material/Autocomplete";
 import { grey } from "@mui/material/colors";
 import Grid from "@mui/material/Grid"; // 
+import type {
+  Skill,
+  MemberSkills,
+  AllSkills,
+  TeamMakerProps,
+} from "../types/interfaces";
 
 
-// types
-interface Team {
-  teamId: string;
-  srcId: string;
-  srcName: string;
-  targetId: string;
-  targetName: string;
-}
-
-interface Skill {
-  id?: string;
-  expertise: string;
-  experience?: string;
-  inputValue?: string;
-  disabled?: boolean;
-  employeeId?: string;
-}
-
-// memberSkills will hold the selected skills for each team order 
-// (checkbox : true / false , 101 :<selected skill 1> ,102:<selected skill2>)
-type MemberSkills = {
-  [teamId: string]: {
-    checked: boolean;
-    [memberId: string]: any;
-  };
-};
-
-// allSkills will hold all the skills for each team member with key as memberId
-type AllSkills = {
-  [memberId: string]: Skill[];
-};
 
 const filter = createFilterOptions<Skill>();
-
-interface TeamMakerProps {
-  teams: Team[];
-}
-
 const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
+  // memberSkills will hold the selected skills for each team order 
+  // (checkbox : true / false , 101 :<selected skill 1> ,102:<selected skill2>)
   const [memberSkills, setMemberSkills] = useState<MemberSkills>({});
+  // allSkills will hold all the skills for each team member with key as memberId
   const [allSkills, setAllSkills] = useState<AllSkills>({});
 
   useEffect(() => {

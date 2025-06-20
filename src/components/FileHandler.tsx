@@ -10,37 +10,14 @@ import {
   Paper,
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
+import type{
+  FileHandlerProps,
+  SkillConnection,
+  SkillMapping,
+  UploadData,
+  PreviewBlockProps,
+} from "../types/interfaces";
 
-// props type
-interface FileHandlerProps {
-  selections: {
-    [developerId: string]: {
-      checked: boolean;
-      [skillId: string]: any;
-    };
-  };
-}
-
-// connection types
-interface SkillConnection {
-  name: string;
-  developerId: string;
-}
-
-interface SkillMapping {
-  name: string;
-  connectedTo: SkillConnection[];
-}
-
-interface UploadData {
-  skills: SkillMapping[];
-}
-
-interface PreviewBlockProps {
-  title: string;
-  content: string;
-  bg?: string;
-}
 
 const FileHandler: React.FC<FileHandlerProps> = ({ selections }) => {
   const [fileName, setFileName] = useState<string>("");

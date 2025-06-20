@@ -1,15 +1,7 @@
-import React from "react";
 import TeamMaker from "./components/TeamMaker";
 import DummyData from "../public/DummyData.ts";
+import type { Team } from "./types/interfaces.ts";
 
-// Type definition for your team data
-export interface Team {
-  teamId: number;
-  srcId: number;
-  targetId: number;
-  srcName: string;
-  targetName: string;
-}
 
 function App() {
   return (
