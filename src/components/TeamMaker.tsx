@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import { grey } from "@mui/material/colors";
+import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import type {
   Skill,
   MemberSkills,
@@ -171,8 +172,8 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                               typeof val === "string"
                                 ? val
                                 : val.inputValue
-                                ? val.inputValue
-                                : val.expertise;
+                                  ? val.inputValue
+                                  : val.expertise;
                             updateExpertise(team.teamId, member.id, expertise);
                           }}
                           renderOption={(props, option) => (
@@ -207,8 +208,8 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                           <Box
                             sx={{
                               display: "flex",
-                              flexDirection: "column",
-                              alignItems: "center",
+                              flexDirection: "row", // changed from column to row
+                              alignItems: "center", // aligns vertically center in the row
                               mx: 2,
                             }}
                           >
@@ -217,26 +218,17 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                               sx={{
                                 fontSize: 12,
                                 fontWeight: "bold",
-                                mb: 0.5,
+                                mr: 0.5, // spacing between text and icon
                                 color: grey[700],
                               }}
                             >
                               Provided To
                             </Typography>
 
-                            <Typography
-                              variant="h3"
-                              sx={{
-                                color: "#1976d2",
-                                fontWeight: "bold",
-                                lineHeight: 1,
-                                fontSize: 50,
-                              }}
-                            >
-                              →
-                            </Typography>
+                            <ArrowCircleRightIcon />
                           </Box>
                         )}
+
                       </Box>
                     </Grid>
                   ))}

@@ -48,10 +48,12 @@ const FileHandler: React.FC<FileHandlerProps> = ({ selections }) => {
       if (memberIds.length !== 2) return;
 
       // TODO: be sure that first is the first and second is the second
+      memberIds.sort(); // ensures consistent order
       const [firstId, secondId] = memberIds;
       const srcSkill = teamData[firstId];
       const targetSkill = teamData[secondId];
-
+      
+      console.log(teamData); 
       // TODO: before returning line 57 console.log(teamData)
       if (!srcSkill || !targetSkill) return;
 
