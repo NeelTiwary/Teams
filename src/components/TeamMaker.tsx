@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import { grey } from "@mui/material/colors";
-import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
+import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
 import type {
   Skill,
   MemberSkills,
@@ -20,13 +20,10 @@ import type {
   TeamMakerProps,
 } from "../types/interfaces";
 
-const filter = createFilterOptions<Skill>();
+const filter = createFilterOptions<Skill | { inputValue: string }>();
 
 const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
-  // memberSkills will hold the selected skills for each team order 
-  // (checkbox : true / false , 101 :<selected skill 1> ,102:<selected skill2>)
   const [memberSkills, setMemberSkills] = useState<MemberSkills>({});
-   // allSkills will hold all the skills for each team member with key as memberId
   const [allSkills, setAllSkills] = useState<AllSkills>({});
 
   useEffect(() => {
@@ -123,74 +120,61 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
 
                         <Autocomplete
                           disabled={!memberSkills?.[team.teamId]?.checked}
-                          value={
-                            memberSkills?.[team.teamId]?.[member.id] || ""
-                          }
+                          value={memberSkills?.[team.teamId]?.[member.id] || ""}
                           options={
-                            [
-                              {
-                                disabled: true,
-                                expertise: "Skill",
-                                experience: "Experience",
-                              },
-                              ...(allSkills[member.id] || []),
-                            ] as Skill[]
-                          }
-                          isOptionEqualToValue={(option, value) =>
-                            option.expertise === value
+                            (allSkills[member.id] || []).map((skill) => ({
+                              expertise: skill.expertise,
+                              experience: skill.experience,
+                            })) as Skill[]
                           }
                           filterOptions={(options, params) => {
                             const filtered = filter(options, params);
+                            const { inputValue } = params;
                             const isExisting = options.some(
                               (option) =>
                                 option.expertise
                                   .toLowerCase()
-                                  .trim() ===
-                                params.inputValue.toLowerCase().trim()
+                                  .trim() === inputValue.toLowerCase().trim()
                             );
-                            if (params.inputValue !== "" && !isExisting) {
+                            if (inputValue !== "" && !isExisting) {
                               filtered.push({
-                                inputValue: params.inputValue,
-                                expertise: params.inputValue,
-                                disabled: false,
+                                inputValue,
+                                expertise: `Add "${inputValue}"`,
                               });
                             }
                             return filtered;
                           }}
+                          isOptionEqualToValue={(option, value) =>
+                            option.expertise === value
+                          }
                           getOptionLabel={(option) =>
                             typeof option === "string"
                               ? option
-                              : option.inputValue || option.expertise
+                              : "inputValue" in option
+                              ? option.inputValue
+                              : option.expertise
                           }
                           onChange={(_, val) => {
-                            if (!val || val.disabled) {
-                              updateExpertise(
-                                team.teamId,
-                                member.id,
-                                ""
-                              );
+                            if (!val) {
+                              updateExpertise(team.teamId, member.id, "");
                               return;
                             }
                             const expertise =
                               typeof val === "string"
                                 ? val
-                                : val.inputValue
-                                  ? val.inputValue
-                                  : val.expertise;
+                                : "inputValue" in val
+                                ? val.inputValue
+                                : val.expertise;
                             updateExpertise(team.teamId, member.id, expertise);
                           }}
                           renderOption={(props, option) => (
-                            <li
-                              {...props}
-                              key={option.expertise}
-                            >
+                            <li {...props} key={option.expertise}>
                               <Box
                                 sx={{
                                   display: "flex",
                                   justifyContent: "space-between",
                                   width: "100%",
                                   fontSize: 14,
-                                  fontWeight: option.disabled ? "bold" : "normal",
                                 }}
                               >
                                 <span>{option.expertise}</span>
@@ -211,8 +195,8 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                           <Box
                             sx={{
                               display: "flex",
-                              flexDirection: "row", // changed from column to row
-                              alignItems: "center", // aligns vertically center in the row
+                              flexDirection: "row",
+                              alignItems: "center",
                               mx: 2,
                             }}
                           >
@@ -221,17 +205,15 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                               sx={{
                                 fontSize: 12,
                                 fontWeight: "bold",
-                                mr: 0.5, // spacing between text and icon
+                                mr: 0.5,
                                 color: grey[700],
                               }}
                             >
                               Provided To
                             </Typography>
-
-                            <ArrowCircleRightIcon />
+                            <ArrowCircleRightIcon color="primary" />
                           </Box>
                         )}
-
                       </Box>
                     </Grid>
                   ))}
@@ -247,7 +229,6 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
         </Typography>
       )}
 
-      {/* Final memberSkills will now have selected skill expertises */}
       <FileHandler selections={memberSkills} />
     </Container>
   );
