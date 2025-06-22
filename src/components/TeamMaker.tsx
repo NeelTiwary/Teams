@@ -1,24 +1,10 @@
 import { useState, useEffect } from "react";
 import FileHandler from "./FileHandler";
-import {
-  Container,
-  Typography,
-  FormGroup,
-  Box,
-  Checkbox,
-  TextField,
-  Divider,
-  Grid,
-} from "@mui/material";
+import { Container, Typography, FormGroup, Box, Checkbox, TextField, Divider, Grid, } from "@mui/material";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import { grey } from "@mui/material/colors";
 import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
-import type {
-  Skill,
-  MemberSkills,
-  AllSkills,
-  TeamMakerProps,
-} from "../types/interfaces";
+import type { Skill, MemberSkills, AllSkills, TeamMakerProps, } from "../types/interfaces";
 
 const filter = createFilterOptions<Skill | { inputValue: string }>();
 
@@ -133,21 +119,24 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                           filterOptions={(options, params) => {
                             const filtered = filter(options, params);
                             const { inputValue } = params;
+
                             const isExisting = options.some(
                               (option) =>
                                 option.expertise
                                   .toLowerCase()
                                   .trim() === inputValue.toLowerCase().trim()
                             );
+
                             if (inputValue !== "" && !isExisting) {
                               filtered.push({
                                 inputValue,
                                 expertise: `Add "${inputValue}"`,
                               });
                             }
+
                             return [
-                              { expertise: "Expertise", experience: "Experience", isHeader: true },
-                              ...filtered
+                              { expertise: "Skill (Expertise)", experience: "Experience", disabled: true },
+                              ...filtered,
                             ];
                           }}
                           isOptionEqualToValue={(option, value) =>
@@ -173,52 +162,29 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                                   : val.expertise;
                             updateExpertise(team.teamId, member.id, expertise);
                           }}
-                          renderOption={(props, option) => {
-                            if ("isHeader" in option) {
-                              return (
-                                <li
-                                  {...props}
-                                  key="header"
-                                  style={{
-                                    fontWeight: "bold",
-                                    borderBottom: "1px solid #ddd",
-                                    background: "#f5f5f5",
-                                    pointerEvents: "none",
-                                  }}
-                                >
-                                  <Box
-                                    sx={{
-                                      display: "flex",
-                                      justifyContent: "space-between",
-                                      width: "100%",
-                                      fontSize: 14,
-                                      px: 1,
-                                    }}
-                                  >
-                                    <span>{option.expertise}</span>
-                                    <span>{option.experience}</span>
-                                  </Box>
-                                </li>
-                              );
-                            }
-
-                            return (
-                              <li {...props} key={option.expertise}>
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    width: "100%",
-                                    fontSize: 14,
-                                  }}
-                                >
-                                  <span>{option.expertise}</span>
-                                  <span>{option.experience || ""}</span>
-                                </Box>
-                              </li>
-                            );
-                          }}
-
+                          renderOption={(props, option) => (
+                            <li
+                              {...props}
+                              key={option.expertise}
+                              style={{
+                                pointerEvents: option.disabled ? "none" : "auto",
+                                opacity: option.disabled ? 0.6 : 1,
+                                fontWeight: option.disabled ? "bold" : "normal",
+                              }}
+                            >
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  width: "100%",
+                                  fontSize: 14,
+                                }}
+                              >
+                                <span>{option.expertise}</span>
+                                <span>{option.experience || ""}</span>
+                              </Box>
+                            </li>
+                          )}
                           renderInput={(params) => (
                             <TextField
                               {...params}
@@ -251,7 +217,6 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                             <ArrowCircleRightIcon sx={{ color: "#333" }} />
                           </Box>
                         )}
-
                       </Box>
                     </Grid>
                   ))}
