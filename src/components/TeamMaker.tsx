@@ -23,10 +23,7 @@ import type {
 const filter = createFilterOptions<Skill | { inputValue: string }>();
 
 const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
-  // memberSkills will hold the selected skills for each team order 
-  // (checkbox : true / false , 101 :<selected skill 1> ,102:<selected skill2>)
   const [memberSkills, setMemberSkills] = useState<MemberSkills>({});
-  // allSkills will hold all the skills for each team member with key as memberId
   const [allSkills, setAllSkills] = useState<AllSkills>({});
 
   useEffect(() => {
@@ -124,17 +121,28 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                         <Autocomplete
                           disabled={!memberSkills?.[team.teamId]?.checked}
                           value={memberSkills?.[team.teamId]?.[member.id] || ""}
-                          options={
-                            (allSkills[member.id] || []).map((skill) => ({
+                          options={[
+                            { expertise: "__header__", experience: "" },
+                            ...(allSkills[member.id] || []).map((skill) => ({
                               expertise: skill.expertise,
                               experience: skill.experience,
-                            })) as Skill[]
-                          }
+                            })),
+                          ]}
                           filterOptions={(options, params) => {
-                            const filtered = filter(options, params);
+                            const filtered = filter(
+                              options.filter(
+                                (o) =>
+                                  typeof o === "object" &&
+                                  "expertise" in o &&
+                                  o.expertise !== "__header__"
+                              ),
+                              params
+                            );
                             const { inputValue } = params;
-                            const isExisting = options.some(
+                            const isExisting = filtered.some(
                               (option) =>
+                                typeof option === "object" &&
+                                "expertise" in option &&
                                 option.expertise
                                   .toLowerCase()
                                   .trim() === inputValue.toLowerCase().trim()
@@ -145,9 +153,14 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                                 expertise: `Add "${inputValue}"`,
                               });
                             }
-                            return filtered;
+                            return [
+                              { expertise: "__header__", experience: "" },
+                              ...filtered,
+                            ];
                           }}
                           isOptionEqualToValue={(option, value) =>
+                            typeof option === "object" &&
+                            "expertise" in option &&
                             option.expertise === value
                           }
                           getOptionLabel={(option) =>
@@ -158,7 +171,12 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                               : option.expertise
                           }
                           onChange={(_, val) => {
-                            if (!val) {
+                            if (
+                              !val ||
+                              (typeof val === "object" &&
+                                "expertise" in val &&
+                                val.expertise === "__header__")
+                            ) {
                               updateExpertise(team.teamId, member.id, "");
                               return;
                             }
@@ -170,21 +188,77 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                                 : val.expertise;
                             updateExpertise(team.teamId, member.id, expertise);
                           }}
-                          renderOption={(props, option) => (
-                            <li {...props} key={option.expertise}>
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  width: "100%",
-                                  fontSize: 14,
-                                }}
+                          getOptionDisabled={(option) =>
+                            typeof option === "object" &&
+                            "expertise" in option &&
+                            option.expertise === "__header__"
+                          }
+                          renderOption={(props, option) => {
+                            if (
+                              typeof option === "object" &&
+                              "expertise" in option &&
+                              option.expertise === "__header__"
+                            ) {
+                              return (
+                                <li
+                                  {...props}
+                                  style={{
+                                    pointerEvents: "none",
+                                    fontWeight: "bold",
+                                    opacity: 0.8,
+                                  }}
+                                >
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      width: "100%",
+                                      px: 1,
+                                      py: 0.5,
+                                      fontSize: 12,
+                                      borderBottom: `1px solid ${grey[300]}`,
+                                    }}
+                                  >
+                                    <span>Skill</span>
+                                    <span>Experience</span>
+                                  </Box>
+                                </li>
+                              );
+                            }
+                            return (
+                              <li
+                                {...props}
+                                key={
+                                  typeof option === "object" &&
+                                  "expertise" in option
+                                    ? option.expertise
+                                    : ""
+                                }
                               >
-                                <span>{option.expertise}</span>
-                                <span>{option.experience || ""}</span>
-                              </Box>
-                            </li>
-                          )}
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    width: "100%",
+                                    fontSize: 14,
+                                  }}
+                                >
+                                  <span>
+                                    {typeof option === "object" &&
+                                    "expertise" in option
+                                      ? option.expertise
+                                      : ""}
+                                  </span>
+                                  <span>
+                                    {typeof option === "object" &&
+                                    "experience" in option
+                                      ? option.experience || ""
+                                      : ""}
+                                  </span>
+                                </Box>
+                              </li>
+                            );
+                          }}
                           renderInput={(params) => (
                             <TextField
                               {...params}
@@ -214,10 +288,9 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                             >
                               Provided To
                             </Typography>
-                            <ArrowCircleRightIcon  sx={{ color: "#333" }}/>
+                            <ArrowCircleRightIcon sx={{ color: "#333" }} />
                           </Box>
                         )}
-                        
                       </Box>
                     </Grid>
                   ))}
