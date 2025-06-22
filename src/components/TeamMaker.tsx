@@ -145,7 +145,10 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                                 expertise: `Add "${inputValue}"`,
                               });
                             }
-                            return filtered;
+                            return [
+                              { expertise: "Expertise", experience: "Experience", isHeader: true },
+                              ...filtered
+                            ];
                           }}
                           isOptionEqualToValue={(option, value) =>
                             option.expertise === value
@@ -154,8 +157,8 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                             typeof option === "string"
                               ? option
                               : "inputValue" in option
-                              ? option.inputValue
-                              : option.expertise
+                                ? option.inputValue
+                                : option.expertise
                           }
                           onChange={(_, val) => {
                             if (!val) {
@@ -166,25 +169,56 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                               typeof val === "string"
                                 ? val
                                 : "inputValue" in val
-                                ? val.inputValue
-                                : val.expertise;
+                                  ? val.inputValue
+                                  : val.expertise;
                             updateExpertise(team.teamId, member.id, expertise);
                           }}
-                          renderOption={(props, option) => (
-                            <li {...props} key={option.expertise}>
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  width: "100%",
-                                  fontSize: 14,
-                                }}
-                              >
-                                <span>{option.expertise}</span>
-                                <span>{option.experience || ""}</span>
-                              </Box>
-                            </li>
-                          )}
+                          renderOption={(props, option) => {
+                            if ("isHeader" in option) {
+                              return (
+                                <li
+                                  {...props}
+                                  key="header"
+                                  style={{
+                                    fontWeight: "bold",
+                                    borderBottom: "1px solid #ddd",
+                                    background: "#f5f5f5",
+                                    pointerEvents: "none",
+                                  }}
+                                >
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      width: "100%",
+                                      fontSize: 14,
+                                      px: 1,
+                                    }}
+                                  >
+                                    <span>{option.expertise}</span>
+                                    <span>{option.experience}</span>
+                                  </Box>
+                                </li>
+                              );
+                            }
+
+                            return (
+                              <li {...props} key={option.expertise}>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    width: "100%",
+                                    fontSize: 14,
+                                  }}
+                                >
+                                  <span>{option.expertise}</span>
+                                  <span>{option.experience || ""}</span>
+                                </Box>
+                              </li>
+                            );
+                          }}
+
                           renderInput={(params) => (
                             <TextField
                               {...params}
@@ -214,10 +248,10 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                             >
                               Provided To
                             </Typography>
-                            <ArrowCircleRightIcon  sx={{ color: "#333" }}/>
+                            <ArrowCircleRightIcon sx={{ color: "#333" }} />
                           </Box>
                         )}
-                        
+
                       </Box>
                     </Grid>
                   ))}

@@ -11,7 +11,7 @@ export interface Team {
 export interface Skill {
   id?: string;
   expertise: string;
-  inputValue?: string;
+  // inputValue?: string;
   experience?: string;
   disabled?: boolean;
   employeeId?: string;
