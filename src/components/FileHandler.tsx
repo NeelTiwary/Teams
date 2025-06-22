@@ -18,7 +18,7 @@ import type{
   PreviewBlockProps,
 } from "../types/interfaces";
 
-
+  // selections = (checkbox : true / false , 101 :<selected skill 1> ,102:<selected skill2>) 
 const FileHandler: React.FC<FileHandlerProps> = ({ selections }) => {
   const [fileName, setFileName] = useState<string>("");
   const [rawContent, setRawContent] = useState<string>("");
@@ -29,7 +29,7 @@ const FileHandler: React.FC<FileHandlerProps> = ({ selections }) => {
   const generateConnections = () => {
     const existingMap: { [key: string]: SkillMapping } = {};
 
-    // { "skills": [ { "name": "Frontend Middle", "connectedTo": [ { "name": "agsja", "developerId": "101" } ] } ] }
+    // existing map = { "skills": [ { "name": "Frontend Middle", "connectedTo": [ { "name": "agsja", "developerId": "101" } ] } ] }
 
     if (uploadedData?.skills?.length) {
       uploadedData.skills.forEach((item) => {
@@ -47,16 +47,14 @@ const FileHandler: React.FC<FileHandlerProps> = ({ selections }) => {
       const memberIds = Object.keys(teamData).filter((k) => k !== "checked");
       if (memberIds.length !== 2) return;
 
-      // TODO: be sure that first is the first and second is the second
-      memberIds.sort(); // ensures consistent order
       const [firstId, secondId] = memberIds;
       const srcSkill = teamData[firstId];
       const targetSkill = teamData[secondId];
       
       console.log(teamData); 
-      // TODO: before returning line 57 console.log(teamData)
       if (!srcSkill || !targetSkill) return;
 
+      //TODO: reduce the number of lines, merge lines. line(57,79)
       if (!existingMap[targetSkill]) {
         existingMap[targetSkill] = {
           name: targetSkill,

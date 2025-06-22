@@ -124,7 +124,8 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                               (option) =>
                                 option.expertise
                                   .toLowerCase()
-                                  .trim() === inputValue.toLowerCase().trim()
+                                  .trim().includes(inputValue.toLowerCase().trim())
+                              // .trim() === inputValue.toLowerCase().trim()
                             );
 
                             if (inputValue !== "" && !isExisting) {
@@ -133,15 +134,14 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                                 expertise: `Add "${inputValue}"`,
                               });
                             }
-
                             return [
                               { expertise: "Skill (Expertise)", experience: "Experience", disabled: true },
                               ...filtered,
                             ];
                           }}
-                          isOptionEqualToValue={(option, value) =>
-                            option.expertise === value
-                          }
+                          // isOptionEqualToValue={(option, value) =>
+                          //   option.expertise === value
+                          // }
                           getOptionLabel={(option) =>
                             typeof option === "string"
                               ? option
@@ -150,17 +150,15 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                                 : option.expertise
                           }
                           onChange={(_, val) => {
-                            if (!val) {
-                              updateExpertise(team.teamId, member.id, "");
-                              return;
+                            if (val) {
+                                const expertise =
+                                  typeof val === "string"
+                                    ? val
+                                    : "inputValue" in val
+                                      ? val.inputValue
+                                      : val.expertise;
+                                updateExpertise(team.teamId, member.id, expertise);
                             }
-                            const expertise =
-                              typeof val === "string"
-                                ? val
-                                : "inputValue" in val
-                                  ? val.inputValue
-                                  : val.expertise;
-                            updateExpertise(team.teamId, member.id, expertise);
                           }}
                           renderOption={(props, option) => (
                             <li
@@ -231,7 +229,6 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
           No team data available.
         </Typography>
       )}
-
       <FileHandler selections={memberSkills} />
     </Container>
   );
