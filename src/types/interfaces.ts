@@ -12,7 +12,6 @@ export interface Skill {
   id?: string;
   expertise: string;
   experience?: string;
-  inputValue?: string;
   disabled?: boolean;
   employeeId?: string;
 }
