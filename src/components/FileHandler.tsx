@@ -79,6 +79,8 @@ const FileHandler: React.FC<FileHandlerProps> = ({ selections }) => {
 
     const mergedConnections = Object.values(existingMap);
     setCombinedContent(JSON.stringify({ skills: mergedConnections }, null, 2));
+    localStorage.setItem("combinedContent", JSON.stringify({ skills: mergedConnections }));
+
   };
 
   const handleShowContent = () => {
