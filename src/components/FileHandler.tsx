@@ -59,7 +59,7 @@ const FileHandler: React.FC<FileHandlerProps> = ({ selections }) => {
       if (!srcSkill || !targetSkill) return;
 
       const srcId = srcKey.split("-")[1];
-      const targetId = targetKey.split("-")[1];
+      // const targetId = targetKey.split("-")[1];
 
       // create mapping for target skill if not present
       if (!existingMap[targetSkill]) {

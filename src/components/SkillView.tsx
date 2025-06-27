@@ -1,39 +1,36 @@
-// src/components/SkillView.tsx
-import { useEffect, useState } from "react";
-import { Box, Paper, Typography } from "@mui/material";
+import React from "react";
+import { Container, Typography, Box } from "@mui/material";
 
-const SkillView = () => {
-  const [content, setContent] = useState<{ skills: unknown[] }>({ skills: [] });
+const SkillView: React.FC = () => {
+  const params = new URLSearchParams(window.location.search);
 
-  useEffect(() => {
-    const raw = localStorage.getItem("combinedContent");
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw);
-        setContent(parsed);
-      } catch {
-        setContent({ skills: [] });
-      }
-    }
-  }, []);
+  const srcName = params.get("srcName");
+  const srcId = params.get("srcId");
+  const srcSkill = params.get("srcSkill");
 
-  useEffect(() => {
-    if (content.skills.length) {
-      localStorage.setItem("combinedContent", JSON.stringify(content));
-    }
-  }, [content]);
+  const targetName = params.get("targetName");
+  const targetId = params.get("targetId");
+  const targetSkill = params.get("targetSkill");
+
+  if (!srcName || !targetName || !srcSkill || !targetSkill) return null;
 
   return (
-    <Box sx={{ p: 4 }}>
-      <Typography variant="h5" fontWeight="bold">
-        Skill Connections
-      </Typography>
-      <Paper sx={{ mt: 2, p: 2, bgcolor: "#e8f5e9", overflow: "auto", maxHeight: 600 }}>
-        <pre style={{ margin: 0, fontSize: 12 }}>
-          {JSON.stringify(content, null, 2)}
-        </pre>
-      </Paper>
-    </Box>
+    <Container maxWidth="sm" sx={{ mt: 10 }}>
+      <Box sx={{ p: 4, border: "1px solid gray", borderRadius: 2 }}>
+        <Typography variant="h5" fontWeight="bold" gutterBottom>
+          Skill Mapping
+        </Typography>
+        <Typography variant="body1" sx={{ mb: 1 }}>
+          <strong>{srcName}</strong> (ID: {srcId}) — <em>{srcSkill}</em>
+        </Typography>
+        <Typography variant="body1">
+          → provided to →
+        </Typography>
+        <Typography variant="body1" sx={{ mt: 1 }}>
+          <strong>{targetName}</strong> (ID: {targetId}) — <em>{targetSkill}</em>
+        </Typography>
+      </Box>
+    </Container>
   );
 };
 
