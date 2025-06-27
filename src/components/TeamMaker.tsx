@@ -109,7 +109,7 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
 
                         <Autocomplete
                           disabled={!memberSkills?.[team.teamId]?.checked}
-                          value={memberSkills?.[team.teamId]?.[member.id] || ""}
+                          value={memberSkills?.[team.teamId]?.[`${index}-${member.id}`] || ""}
                           options={
                             (allSkills[member.id] || []).map((skill) => ({
                               expertise: skill.expertise,
@@ -151,15 +151,16 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                           }
                           onChange={(_, val) => {
                             if (val) {
-                                const expertise =
-                                  typeof val === "string"
-                                    ? val
-                                    : "inputValue" in val
-                                      ? val.inputValue
-                                      : val.expertise;
-                                updateExpertise(team.teamId, member.id, expertise);
+                              const expertise =
+                                typeof val === "string"
+                                  ? val
+                                  : "inputValue" in val
+                                    ? val.inputValue
+                                    : val.expertise;
+                              updateExpertise(team.teamId, `${index}-${member.id}`, expertise);
                             }
                           }}
+
                           renderOption={(props, option) => (
                             <li
                               {...props}

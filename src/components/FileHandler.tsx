@@ -10,7 +10,7 @@ import {
   Paper,
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
-import type{
+import type {
   FileHandlerProps,
   SkillConnection,
   SkillMapping,
@@ -18,7 +18,7 @@ import type{
   PreviewBlockProps,
 } from "../types/interfaces";
 
-  // selections = (checkbox : true / false , 101 :<selected skill 1> ,102:<selected skill2>) 
+// selections = (checkbox : true / false , 101 :<selected skill 1> ,102:<selected skill2>) 
 const FileHandler: React.FC<FileHandlerProps> = ({ selections }) => {
   const [fileName, setFileName] = useState<string>("");
   const [rawContent, setRawContent] = useState<string>("");
@@ -44,17 +44,24 @@ const FileHandler: React.FC<FileHandlerProps> = ({ selections }) => {
     Object.entries(selections || {}).forEach(([_, teamData]) => {
       if (!teamData.checked) return;
 
-      const memberIds = Object.keys(teamData).filter((k) => k !== "checked");
-      if (memberIds.length !== 2) return;
+      const memberKeys = Object.keys(teamData).filter((k) => k !== "checked");
+      if (memberKeys.length !== 2) return;
 
-      const [firstId, secondId] = memberIds;
-      const srcSkill = teamData[firstId];
-      const targetSkill = teamData[secondId];
-      
-      console.log(teamData); 
+      // find src and target based on prefix
+      const srcKey = memberKeys.find((key) => key.startsWith("0-"));
+      const targetKey = memberKeys.find((key) => key.startsWith("1-"));
+
+      if (!srcKey || !targetKey) return;
+
+      const srcSkill = teamData[srcKey];
+      const targetSkill = teamData[targetKey];
+
       if (!srcSkill || !targetSkill) return;
 
-      //TODO: reduce the number of lines, merge lines. line(57,79)
+      const srcId = srcKey.split("-")[1];
+      const targetId = targetKey.split("-")[1];
+
+      // create mapping for target skill if not present
       if (!existingMap[targetSkill]) {
         existingMap[targetSkill] = {
           name: targetSkill,
@@ -64,7 +71,7 @@ const FileHandler: React.FC<FileHandlerProps> = ({ selections }) => {
 
       const connection: SkillConnection = {
         name: srcSkill,
-        developerId: firstId,
+        developerId: srcId,
       };
 
       const exists = existingMap[targetSkill].connectedTo.find(
@@ -76,6 +83,7 @@ const FileHandler: React.FC<FileHandlerProps> = ({ selections }) => {
         existingMap[targetSkill].connectedTo.push(connection);
       }
     });
+
 
     const mergedConnections = Object.values(existingMap);
     setCombinedContent(JSON.stringify({ skills: mergedConnections }, null, 2));
@@ -122,8 +130,8 @@ const FileHandler: React.FC<FileHandlerProps> = ({ selections }) => {
       format === "json"
         ? new Blob([combinedContent], { type: "application/json" })
         : new Blob([yaml.dump(JSON.parse(combinedContent))], {
-            type: "application/x-yaml",
-          });
+          type: "application/x-yaml",
+        });
 
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
