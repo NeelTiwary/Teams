@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 import FileHandler from "./FileHandler";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Container,
   Typography,
@@ -26,6 +30,15 @@ const filter = createFilterOptions<Skill | { inputValue: string }>();
 const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
   const [memberSkills, setMemberSkills] = useState<MemberSkills>({});
   const [allSkills, setAllSkills] = useState<AllSkills>({});
+
+  //dialog box 
+  const [modalUrl, setModalUrl] = useState<string | null>(null);
+  const [openDialog, setOpenDialog] = useState(false);
+
+  //iframe
+  const [internalViewerUrl, setInternalViewerUrl] = useState<string | null>(null);
+
+
 
   useEffect(() => {
     fetch(
@@ -73,13 +86,14 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
 
   return (
     <Container
-      maxWidth="lg"
+      maxWidth={false}
       sx={{
         mt: 4,
         mb: 4,
         border: 1,
         borderColor: grey[400],
         borderRadius: 2,
+        maxWidth: "1600px",
       }}
     >
       <Typography
@@ -123,7 +137,7 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                           disabled={!memberSkills?.[team.teamId]?.checked}
                           value={
                             memberSkills?.[team.teamId]?.[
-                              `${index}-${member.id}`
+                            `${index}-${member.id}`
                             ] || ""
                           }
                           options={
@@ -162,8 +176,8 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                             typeof option === "string"
                               ? option
                               : "inputValue" in option
-                              ? option.inputValue
-                              : option.expertise
+                                ? option.inputValue
+                                : option.expertise
                           }
                           onChange={(_, val) => {
                             if (val) {
@@ -171,8 +185,8 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                                 typeof val === "string"
                                   ? val
                                   : "inputValue" in val
-                                  ? val.inputValue
-                                  : val.expertise;
+                                    ? val.inputValue
+                                    : val.expertise;
 
                               updateExpertise(
                                 team.teamId,
@@ -242,22 +256,18 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                     </Grid>
                   ))}
 
-                  <Box item>
+                  <Box>
                     <Button
                       variant="outlined"
                       onClick={() => {
                         const srcKey = `0-${team.srcId}`;
                         const targetKey = `1-${team.targetId}`;
-                        const srcSkill =
-                          memberSkills?.[team.teamId]?.[srcKey] || "";
-                        const targetSkill =
-                          memberSkills?.[team.teamId]?.[targetKey] || "";
+                        const srcSkill = memberSkills?.[team.teamId]?.[srcKey] || "";
+                        const targetSkill = memberSkills?.[team.teamId]?.[targetKey] || "";
 
                         const url = `http://localhost:3000?srcName=${encodeURIComponent(
                           team.srcName
-                        )}&srcId=${encodeURIComponent(
-                          team.srcId
-                        )}&srcSkill=${encodeURIComponent(
+                        )}&srcId=${encodeURIComponent(team.srcId)}&srcSkill=${encodeURIComponent(
                           srcSkill
                         )}&targetName=${encodeURIComponent(
                           team.targetName
@@ -265,11 +275,29 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                           team.targetId
                         )}&targetSkill=${encodeURIComponent(targetSkill)}`;
 
+                        // Open in new tab
                         window.open(url, "_blank");
+
+                        // Also open inside modal
+                        const internalUrl = `/skill-mapping-viewer?srcName=${encodeURIComponent(
+                          team.srcName
+                        )}&srcId=${encodeURIComponent(team.srcId)}&srcSkill=${encodeURIComponent(
+                          srcSkill
+                        )}&targetName=${encodeURIComponent(
+                          team.targetName
+                        )}&targetId=${encodeURIComponent(
+                          team.targetId
+                        )}&targetSkill=${encodeURIComponent(targetSkill)}`;
+
+                        setInternalViewerUrl(internalUrl);
+
+                        setModalUrl(internalUrl);
+                        setOpenDialog(true);
                       }}
                     >
                       View Skills Mapping
                     </Button>
+
                   </Box>
                 </Grid>
                 <Divider sx={{ mt: 4 }} />
@@ -277,13 +305,73 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
             );
           })}
         </FormGroup>
+
       ) : (
         <Typography sx={{ textAlign: "center", mt: 2 }}>
           No team data available.
         </Typography>
       )}
 
+
+      // data for the
+      <Dialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        fullWidth
+        maxWidth="md"
+      >
+        <DialogTitle>
+          <IconButton
+            aria-label="close"
+            onClick={() => setOpenDialog(false)}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+
+
+
+        {modalUrl && (
+          <iframe
+            src={modalUrl}
+            title="Skill Mapping"
+            style={{
+              width: "100%",
+              height: "500px",
+              border: "none",
+            }}
+          />
+        )}
+      </Dialog>
+
+
+
       <FileHandler selections={memberSkills} />
+
+        // internal loading data using Iframe
+      {internalViewerUrl && (
+        <Box sx={{ mt: 6 }}>
+          <Typography variant="h5" gutterBottom>
+            Embedded Skill Mapping Viewer
+          </Typography>
+          <iframe
+            src={internalViewerUrl}
+            title="Embedded Skill Mapping Viewer"
+            style={{
+              width: "100%",
+              height: "500px",
+              border: "1px solid #ccc",
+              borderRadius: "8px",
+            }}
+          />
+        </Box>
+      )}
     </Container>
   );
 };
