@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import FileHandler from "./FileHandler";
-import { Container, Typography, FormGroup, Box, Checkbox, TextField, Divider, Grid,Button, } from "@mui/material";
+import { Container, Typography, FormGroup, Box, Checkbox, TextField, Divider, Grid, Button, } from "@mui/material";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import { grey } from "@mui/material/colors";
 import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
@@ -221,32 +221,32 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                   ))}
                 </Grid>
                 <Button
-  variant="outlined"
-  sx={{ mt: 2 }}
-  onClick={() => {
-    const teamData = memberSkills[team.teamId];
-    if (!teamData?.checked) return;
+                  variant="outlined"
+                  sx={{ mt: 2 }}
+                  onClick={() => {
+                    const teamData = memberSkills[team.teamId];
+                    if (!teamData?.checked) return;
 
-    const srcKey = `0-${team.srcId}`;
-    const targetKey = `1-${team.targetId}`;
-    const srcSkill = teamData[srcKey];
-    const targetSkill = teamData[targetKey];
+                    const srcKey = `0-${team.srcId}`;
+                    const targetKey = `1-${team.targetId}`;
+                    const srcSkill = teamData[srcKey];
+                    const targetSkill = teamData[targetKey];
 
-    if (!srcSkill || !targetSkill) return;
+                    if (!srcSkill || !targetSkill) return;
 
-    const url = new URL(window.location.href);
-    url.searchParams.set("srcName", team.srcName);
-    url.searchParams.set("srcId", team.srcId);
-    url.searchParams.set("srcSkill", srcSkill);
-    url.searchParams.set("targetName", team.targetName);
-    url.searchParams.set("targetId", team.targetId);
-    url.searchParams.set("targetSkill", targetSkill);
+                    const url = new URL(window.location.href);
+                    url.searchParams.set("srcName", team.srcName);
+                    url.searchParams.set("srcId", team.srcId);
+                    url.searchParams.set("srcSkill", srcSkill);
+                    url.searchParams.set("targetName", team.targetName);
+                    url.searchParams.set("targetId", team.targetId);
+                    url.searchParams.set("targetSkill", targetSkill);
 
-    window.location.href = url.toString();
-  }}
->
-  View Skill Mapping
-</Button>
+                    window.location.href = url.toString();
+                  }}
+                >
+                  View Skill Mapping
+                </Button>
 
                 <Divider sx={{ mt: 4 }} />
               </Box>
