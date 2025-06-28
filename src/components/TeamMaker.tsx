@@ -1,18 +1,30 @@
 import { useState, useEffect } from "react";
 import FileHandler from "./FileHandler";
-import { Container, Typography, FormGroup, Box, Checkbox, TextField, Divider, Grid,Button, } from "@mui/material";
+import {
+  Container,
+  Typography,
+  FormGroup,
+  Box,
+  Checkbox,
+  TextField,
+  Divider,
+  Grid,
+  Button,
+} from "@mui/material";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import { grey } from "@mui/material/colors";
 import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
-import type { Skill, MemberSkills, AllSkills, TeamMakerProps, } from "../types/interfaces";
+import type {
+  Skill,
+  MemberSkills,
+  AllSkills,
+  TeamMakerProps,
+} from "../types/interfaces";
 
 const filter = createFilterOptions<Skill | { inputValue: string }>();
 
 const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
-  // memberSkills will hold the selected skills for each team order 
-  // (checkbox : true / false , 101 :<selected skill 1> ,102:<selected skill2>)
   const [memberSkills, setMemberSkills] = useState<MemberSkills>({});
-  // allSkills will hold all the skills for each team member with key as memberId
   const [allSkills, setAllSkills] = useState<AllSkills>({});
 
   useEffect(() => {
@@ -109,7 +121,11 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
 
                         <Autocomplete
                           disabled={!memberSkills?.[team.teamId]?.checked}
-                          value={memberSkills?.[team.teamId]?.[`${index}-${member.id}`] || ""}
+                          value={
+                            memberSkills?.[team.teamId]?.[
+                              `${index}-${member.id}`
+                            ] || ""
+                          }
                           options={
                             (allSkills[member.id] || []).map((skill) => ({
                               expertise: skill.expertise,
@@ -120,12 +136,10 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                             const filtered = filter(options, params);
                             const { inputValue } = params;
 
-                            const isExisting = options.some(
-                              (option) =>
-                                option.expertise
-                                  .toLowerCase()
-                                  .trim().includes(inputValue.toLowerCase().trim())
-                              // .trim() === inputValue.toLowerCase().trim()
+                            const isExisting = options.some((option) =>
+                              option.expertise
+                                .toLowerCase()
+                                .includes(inputValue.toLowerCase().trim())
                             );
 
                             if (inputValue !== "" && !isExisting) {
@@ -134,20 +148,22 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                                 expertise: `Add "${inputValue}"`,
                               });
                             }
+
                             return [
-                              { expertise: "Skill (Expertise)", experience: "Experience", disabled: true },
+                              {
+                                expertise: "Skill (Expertise)",
+                                experience: "Experience",
+                                disabled: true,
+                              },
                               ...filtered,
                             ];
                           }}
-                          // isOptionEqualToValue={(option, value) =>
-                          //   option.expertise === value
-                          // }
                           getOptionLabel={(option) =>
                             typeof option === "string"
                               ? option
                               : "inputValue" in option
-                                ? option.inputValue
-                                : option.expertise
+                              ? option.inputValue
+                              : option.expertise
                           }
                           onChange={(_, val) => {
                             if (val) {
@@ -155,18 +171,24 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                                 typeof val === "string"
                                   ? val
                                   : "inputValue" in val
-                                    ? val.inputValue
-                                    : val.expertise;
-                              updateExpertise(team.teamId, `${index}-${member.id}`, expertise);
+                                  ? val.inputValue
+                                  : val.expertise;
+
+                              updateExpertise(
+                                team.teamId,
+                                `${index}-${member.id}`,
+                                expertise
+                              );
                             }
                           }}
-
                           renderOption={(props, option) => (
                             <li
                               {...props}
                               key={option.expertise}
                               style={{
-                                pointerEvents: option.disabled ? "none" : "auto",
+                                pointerEvents: option.disabled
+                                  ? "none"
+                                  : "auto",
                                 opacity: option.disabled ? 0.6 : 1,
                                 fontWeight: option.disabled ? "bold" : "normal",
                               }}
@@ -219,35 +241,37 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                       </Box>
                     </Grid>
                   ))}
+
+                  <Box item>
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        const srcKey = `0-${team.srcId}`;
+                        const targetKey = `1-${team.targetId}`;
+                        const srcSkill =
+                          memberSkills?.[team.teamId]?.[srcKey] || "";
+                        const targetSkill =
+                          memberSkills?.[team.teamId]?.[targetKey] || "";
+
+                        const url = `http://localhost:3000?srcName=${encodeURIComponent(
+                          team.srcName
+                        )}&srcId=${encodeURIComponent(
+                          team.srcId
+                        )}&srcSkill=${encodeURIComponent(
+                          srcSkill
+                        )}&targetName=${encodeURIComponent(
+                          team.targetName
+                        )}&targetId=${encodeURIComponent(
+                          team.targetId
+                        )}&targetSkill=${encodeURIComponent(targetSkill)}`;
+
+                        window.open(url, "_blank");
+                      }}
+                    >
+                      View Skills Mapping
+                    </Button>
+                  </Box>
                 </Grid>
-                <Button
-  variant="outlined"
-  sx={{ mt: 2 }}
-  onClick={() => {
-    const teamData = memberSkills[team.teamId];
-    if (!teamData?.checked) return;
-
-    const srcKey = `0-${team.srcId}`;
-    const targetKey = `1-${team.targetId}`;
-    const srcSkill = teamData[srcKey];
-    const targetSkill = teamData[targetKey];
-
-    if (!srcSkill || !targetSkill) return;
-
-    const url = new URL(window.location.href);
-    url.searchParams.set("srcName", team.srcName);
-    url.searchParams.set("srcId", team.srcId);
-    url.searchParams.set("srcSkill", srcSkill);
-    url.searchParams.set("targetName", team.targetName);
-    url.searchParams.set("targetId", team.targetId);
-    url.searchParams.set("targetSkill", targetSkill);
-
-    window.location.href = url.toString();
-  }}
->
-  View Skill Mapping
-</Button>
-
                 <Divider sx={{ mt: 4 }} />
               </Box>
             );
@@ -258,6 +282,7 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
           No team data available.
         </Typography>
       )}
+
       <FileHandler selections={memberSkills} />
     </Container>
   );
