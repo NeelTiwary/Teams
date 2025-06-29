@@ -37,7 +37,7 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
 
   //iframe
   const [internalViewerUrl, setInternalViewerUrl] = useState<string | null>(null);
-
+  const [showInternalViewer, setShowInternalViewer] = useState<boolean>(true);
 
 
   useEffect(() => {
@@ -276,29 +276,24 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
                         )}&targetSkill=${encodeURIComponent(targetSkill)}`;
 
                         // Open in new tab
-                        window.open(url, "_blank");
+                        window.open(url, "_blank"); //comment this
 
-                        // Also open inside modal
-                        const internalUrl = `/skill-mapping-viewer?srcName=${encodeURIComponent(
-                          team.srcName
-                        )}&srcId=${encodeURIComponent(team.srcId)}&srcSkill=${encodeURIComponent(
-                          srcSkill
-                        )}&targetName=${encodeURIComponent(
-                          team.targetName
-                        )}&targetId=${encodeURIComponent(
-                          team.targetId
-                        )}&targetSkill=${encodeURIComponent(targetSkill)}`;
+                        //for iframe 
+                        setInternalViewerUrl(url);
+                        setShowInternalViewer(true);  
 
-                        setInternalViewerUrl(internalUrl);
+                        // for modal 
+                        setModalUrl(url);
+                        setOpenDialog(true); 
 
-                        setModalUrl(internalUrl);
-                        setOpenDialog(true);
+
                       }}
                     >
                       View Skills Mapping
                     </Button>
 
                   </Box>
+
                 </Grid>
                 <Divider sx={{ mt: 4 }} />
               </Box>
@@ -313,7 +308,7 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
       )}
 
 
-      // data for the
+      
       <Dialog
         open={openDialog}
         onClose={() => setOpenDialog(false)}
@@ -354,12 +349,30 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
 
       <FileHandler selections={memberSkills} />
 
-        // internal loading data using Iframe
-      {internalViewerUrl && (
+      {/* // internal loading data using Iframe */}
+      {internalViewerUrl && showInternalViewer && (
         <Box sx={{ mt: 6 }}>
-          <Typography variant="h5" gutterBottom>
-            Embedded Skill Mapping Viewer
-          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 1,
+            }}
+          >
+            <Typography variant="h5" gutterBottom>
+              Embedded Skill Mapping Viewer
+            </Typography>
+            <Button
+              variant="outlined"
+              size="small"
+              color="error"
+              onClick={() => setShowInternalViewer(false)}
+            >
+              Hide Viewer
+             </Button> {/*button for hide content */}
+          </Box>
+
           <iframe
             src={internalViewerUrl}
             title="Embedded Skill Mapping Viewer"
@@ -372,6 +385,7 @@ const TeamMaker: React.FC<TeamMakerProps> = ({ teams }) => {
           />
         </Box>
       )}
+
     </Container>
   );
 };
